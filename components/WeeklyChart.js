@@ -3,63 +3,72 @@
 import {
   ResponsiveContainer,
   ComposedChart,
+  Area,
   Bar,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
+  Legend,
 } from "recharts";
+
+const axisStyle = { fill: "#5d6b80", fontSize: 11 };
+
+const tooltipStyle = {
+  background: "rgba(13, 17, 23, 0.95)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: 12,
+  fontSize: 12,
+  backdropFilter: "blur(10px)",
+};
 
 export default function WeeklyChart({ data }) {
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <ComposedChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-        <CartesianGrid stroke="#232c3a" vertical={false} />
+    <ResponsiveContainer width="100%" height={270}>
+      <ComposedChart data={data} margin={{ top: 6, right: 6, left: -12, bottom: 0 }}>
+        <defs>
+          <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#5eead4" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#5eead4" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid stroke="rgba(255,255,255,0.05)" vertical={false} />
         <XAxis
           dataKey="week"
-          tick={{ fill: "#8b97a8", fontSize: 11 }}
-          tickFormatter={(v) => v.slice(5)}
-          axisLine={{ stroke: "#232c3a" }}
-          tickLine={false}
-        />
-        <YAxis
-          yAxisId="left"
-          tick={{ fill: "#8b97a8", fontSize: 11 }}
+          tick={axisStyle}
+          tickFormatter={(v) => v.slice(8) + "/" + v.slice(5, 7)}
           axisLine={false}
           tickLine={false}
-          width={30}
         />
+        <YAxis yAxisId="left" tick={axisStyle} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
         <YAxis
           yAxisId="right"
           orientation="right"
-          tick={{ fill: "#8b97a8", fontSize: 11 }}
+          tick={axisStyle}
           axisLine={false}
           tickLine={false}
-          width={44}
+          width={46}
+          tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : v)}
         />
         <Tooltip
-          contentStyle={{
-            background: "#161d28",
-            border: "1px solid #232c3a",
-            borderRadius: 10,
-            fontSize: 12,
-          }}
-          labelStyle={{ color: "#eef2f7" }}
+          contentStyle={tooltipStyle}
+          labelStyle={{ color: "#f2f6fb", fontWeight: 600 }}
+          formatter={(value, name) =>
+            name === "volumen"
+              ? [`${value.toLocaleString("es-ES")} kg`, "Volumen"]
+              : [value, "Sesiones"]
+          }
         />
-        <Bar
-          yAxisId="left"
-          dataKey="sesiones"
-          fill="#7dd3fc"
-          radius={[6, 6, 0, 0]}
-          barSize={18}
-        />
-        <Line
+        <Legend wrapperStyle={{ fontSize: 12, color: "#8a97ab" }} iconType="circle" iconSize={8} />
+        <Bar yAxisId="left" dataKey="sesiones" name="sesiones" fill="#60a5fa" radius={[6, 6, 0, 0]} barSize={16} />
+        <Area
           yAxisId="right"
+          type="monotone"
           dataKey="volumen"
-          stroke="#6ee7b7"
-          strokeWidth={2}
-          dot={false}
+          name="volumen"
+          stroke="#5eead4"
+          strokeWidth={2.2}
+          fill="url(#volGrad)"
         />
       </ComposedChart>
     </ResponsiveContainer>

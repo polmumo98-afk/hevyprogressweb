@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Nav from "@/components/Nav";
 import ExerciseChart from "@/components/ExerciseChart";
+import GoalTracker from "@/components/GoalTracker";
 import { useDashboardData } from "@/components/useDashboardData";
 
 function kg(n) {
@@ -105,6 +106,8 @@ export default function ExercisesPage() {
                     </div>
                   )}
                 </div>
+
+                <GoalTracker exercise={selected} />
 
                 {selected.history.length > 1 ? (
                   <ExerciseChart history={selected.history} />

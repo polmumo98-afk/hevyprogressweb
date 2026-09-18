@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 
-export function useDashboardData() {
+export function useDashboardData(range = "all") {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/data")
+    setLoading(true);
+    setError(null);
+    fetch(`/api/data?range=${encodeURIComponent(range)}`)
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Error cargando datos");
@@ -27,7 +29,7 @@ export function useDashboardData() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [range]);
 
   return { data, error, loading };
 }

@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Nav from "@/components/Nav";
 import WeeklyChart from "@/components/WeeklyChart";
 import MonthlyChart from "@/components/MonthlyChart";
 import Heatmap from "@/components/Heatmap";
+import RangeFilter from "@/components/RangeFilter";
+import MuscleBalance from "@/components/MuscleBalance";
+import WorkoutModal from "@/components/WorkoutModal";
 import { useDashboardData } from "@/components/useDashboardData";
 import {
   IconDumbbell,
@@ -77,7 +81,9 @@ function Trend({ current, previous }) {
 }
 
 export default function DashboardPage() {
-  const { data, error, loading } = useDashboardData();
+  const [range, setRange] = useState("all");
+  const [openWorkout, setOpenWorkout] = useState(null);
+  const { data, error, loading } = useDashboardData(range);
 
   return (
     <div className="page">
@@ -101,6 +107,8 @@ export default function DashboardPage() {
           )}
         </p>
       </div>
+
+      <RangeFilter value={range} onChange={setRange} />
 
       {error && (
         <div className="error-box">
@@ -252,6 +260,19 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* ---- Balance muscular ---- */}
+          {data.muscleBalance && (
+            <div className="panel">
+              <div className="section-head">
+                <h2 className="section-title">Balance muscular</h2>
+                <span className="section-hint">
+                  reparto de series por patrón de movimiento
+                </span>
+              </div>
+              <MuscleBalance balance={data.muscleBalance} />
+            </div>
+          )}
+
           {/* ---- Récords + volumen mensual ---- */}
           <div className="two-col-even">
             <div className="panel">
@@ -329,7 +350,14 @@ export default function DashboardPage() {
                 <div className="empty-state">Todavía no hay entrenamientos.</div>
               )}
               {data.recentWorkouts.map((w) => (
-                <div className="row" key={w.id}>
+                <div
+                  className="row row-clickable"
+                  key={w.id}
+                  onClick={() => setOpenWorkout(w)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => e.key === "Enter" && setOpenWorkout(w)}
+                >
                   <div>
                     <div className="row-title">{w.title}</div>
                     <div className="row-meta">
@@ -349,6 +377,10 @@ export default function DashboardPage() {
         Datos en vivo desde tu cuenta de Hevy · se refrescan cada 5 minutos ·
         pesos en kg
       </div>
+
+      {openWorkout && (
+        <WorkoutModal workout={openWorkout} onClose={() => setOpenWorkout(null)} />
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 const OPTIONS = [
+  { value: "week", label: "Semana" },
   { value: "30", label: "30 días" },
   { value: "90", label: "3 meses" },
   { value: "365", label: "1 año" },

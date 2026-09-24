@@ -7,6 +7,7 @@ import MonthlyChart from "@/components/MonthlyChart";
 import Heatmap from "@/components/Heatmap";
 import RangeFilter from "@/components/RangeFilter";
 import MuscleBalance from "@/components/MuscleBalance";
+import WeekView from "@/components/WeekView";
 import WorkoutModal from "@/components/WorkoutModal";
 import { useDashboardData } from "@/components/useDashboardData";
 import {
@@ -134,6 +135,26 @@ export default function DashboardPage() {
 
       {data && (
         <>
+          {/* ---- Vista de esta semana ---- */}
+          {data.weekView && (
+            <div className="panel">
+              <div className="section-head">
+                <h2 className="section-title">Esta semana</h2>
+                <span className="section-hint">lunes a domingo</span>
+              </div>
+              <WeekView
+                days={data.weekView}
+                onWorkoutClick={(w, d) => {
+                  // busca el entreno completo (con detalle) en recientes
+                  const full = data.recentWorkouts.find(
+                    (rw) => rw.date === d.date && rw.title === w.title
+                  );
+                  if (full) setOpenWorkout(full);
+                }}
+              />
+            </div>
+          )}
+
           {/* ---- KPIs principales ---- */}
           <div className="grid">
             <StatCard
